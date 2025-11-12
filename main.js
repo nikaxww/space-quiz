@@ -1,41 +1,41 @@
-function createElements(){
+// function createElements(){
 
-const form = document.createElement('form')
-const nameInput = document.createElement('input')
-const button = document.createElement('button')
+// const form = document.createElement('form')
+// const nameInput = document.createElement('input')
+// const button = document.createElement('button')
 
-form.classList.add('form')
-nameInput.classList.add('input')
-button.classList.add('start-button')
+// form.classList.add('form')
+// nameInput.classList.add('input')
+// button.classList.add('start-button')
 
-nameInput.placeholder = 'Введите ваше имя'
-button.textContent = 'Начать'
-button.disabled = true
+// nameInput.placeholder = 'Введите ваше имя'
+// button.textContent = 'Начать'
+// button.disabled = true
 
-nameInput.addEventListener('input', () => {
-    const value = nameInput.value.trim();
-    if (value) {
-      button.classList.add('active');
-      button.disabled = false;
-    } else {
-      button.classList.remove('active');
-      button.disabled = true;
-    }
-  });
-
-//   button.addEventListener('click', (e) => {
-//     e.preventDefault(); 
+// nameInput.addEventListener('input', () => {
+//     const value = nameInput.value.trim();
+//     if (value) {
+//       button.classList.add('active');
+//       button.disabled = false;
+//     } else {
+//       button.classList.remove('active');
+//       button.disabled = true;
+//     }
 //   });
 
-form.append(nameInput)
-form.append(button)
+// //   button.addEventListener('click', (e) => {
+// //     e.preventDefault(); 
+// //   });
 
- return{
-    form,
-    nameInput,
-    button
-}
-}
+// form.append(nameInput)
+// form.append(button)
+
+//  return{
+//     form,
+//     nameInput,
+//     button
+// }
+// }
 
 const { form } = createElements();
 document.body.append(form);
@@ -103,4 +103,35 @@ function createQuestons() {
             ]
         }]
     return shuffleArray(questions);
+}
+
+let questionIndex = 0
+const questions = createQuestons()
+
+function renderQuestion() {
+
+    const container = document.createElement('div')
+    container.classList.add('test-container')
+
+    const q = questions[questionIndex]
+
+    container.innerHTML = ''
+
+    const title = document.createElement('h2')
+    title.textContent = ` ${questionIndex}`
+    container.append(title)
+
+    const textQuestion = document.createElement('div')
+    textQuestion.classList.add('text-question')
+    textQuestion.textContent = q.question
+    container.append(textQuestion)
+
+    const img = document.createElement('img');
+    img.classList.add('img-cont')
+    img.src = q.image;
+    img.alt = 'Изображение к вопросу';
+    container.append(img);
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.classList.add('options')
 }
