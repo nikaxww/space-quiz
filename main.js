@@ -1,44 +1,39 @@
-// function createElements(){
+function createElements() {
 
-// const form = document.createElement('form')
-// const nameInput = document.createElement('input')
-// const button = document.createElement('button')
+    const form = document.createElement('form')
+    const nameInput = document.createElement('input')
+    const button = document.createElement('button')
 
-// form.classList.add('form')
-// nameInput.classList.add('input')
-// button.classList.add('start-button')
+    form.classList.add('form')
+    nameInput.classList.add('input')
+    button.classList.add('start-button')
 
-// nameInput.placeholder = 'Введите ваше имя'
-// button.textContent = 'Начать'
-// button.disabled = true
+    nameInput.placeholder = 'Введите ваше имя'
+    button.textContent = 'Начать'
+    button.disabled = true
 
-// nameInput.addEventListener('input', () => {
-//     const value = nameInput.value.trim();
-//     if (value) {
-//       button.classList.add('active');
-//       button.disabled = false;
-//     } else {
-//       button.classList.remove('active');
-//       button.disabled = true;
-//     }
-//   });
+    nameInput.addEventListener('input', () => {
+        const value = nameInput.value.trim();
+        button.disabled = !value;
+    });
 
-// //   button.addEventListener('click', (e) => {
-// //     e.preventDefault(); 
-// //   });
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const userName = nameInput.value.trim();
+        if (userName) {
+            startTest(userName);
+        }
+    });
 
-// form.append(nameInput)
-// form.append(button)
+    form.append(nameInput)
+    form.append(button)
 
-//  return{
-//     form,
-//     nameInput,
-//     button
-// }
-// }
-
-const { form } = createElements();
-document.body.append(form);
+    return {
+        form,
+        nameInput,
+        button
+    }
+}
 
 function shuffleArray(array) {
     const shuffled = [...array];
@@ -51,11 +46,11 @@ function shuffleArray(array) {
 
 function createQuestons() {
 
-    const questions = [
+    return shuffleArray([
         {
             question: 'Спутником какой планеты является Каллисто?',
             image: '',
-            option: [
+            options: [
                 { text: 'Венера', correct: 'false' },
                 { text: 'Юпитер', correct: 'true' },
                 { text: 'Марс', correct: 'false' },
@@ -65,7 +60,7 @@ function createQuestons() {
         {
             question: 'Что из списка не является галактикой?',
             image: '',
-            option: [
+            options: [
                 { text: 'Андромеда', correct: 'false' },
                 { text: 'Магелланово Облако', correct: 'false' },
                 { text: 'Альдебаран', correct: 'true' },
@@ -75,7 +70,7 @@ function createQuestons() {
         {
             question: 'Что такое «Солнечный ветер»?',
             image: '',
-            option: [
+            options: [
                 { text: 'Поток супер-ионизированных частиц из солнечной короны', correct: 'true' },
                 { text: 'Взрывной процесс выделения энергии в атмосфере Солнца', correct: 'false' },
                 { text: 'Внешние слои атмосферы Солнца', correct: 'false' },
@@ -85,7 +80,7 @@ function createQuestons() {
         {
             question: 'Звёздами какого созвездия являются Сегин, Рукбах, Нави, Шедар и Каф?',
             image: '',
-            option: [
+            options: [
                 { text: 'Большая медведица', correct: 'false' },
                 { text: 'Кассиопея', correct: 'true' },
                 { text: 'Гончие псы', correct: 'false' },
@@ -95,30 +90,46 @@ function createQuestons() {
         {
             question: 'Что такое «Астеризм»?',
             image: '',
-            option: [
+            options: [
                 { text: 'Группа звёзд, образующая узнаваемый узор', correct: 'true' },
                 { text: 'Официально признанное созвездие', correct: 'false' },
                 { text: 'Взрыв звезды в конце её жизни', correct: 'false' },
                 { text: 'Скопление газа и пыли в космосе', correct: 'false' }
             ]
-        }]
-    return shuffleArray(questions);
+        }])
 }
 
 let questionIndex = 0
-const questions = createQuestons()
+let questions = [];
+let userName = '';
+let userAnswers = [];
+
+function startTest(name) {
+    userName = name;
+    questions = createQuestons();
+    questionIndex = 0;
+    userAnswers = [];
+
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+
+    renderQuestion();
+}
+
 
 function renderQuestion() {
+
+    const app = document.getElementById('app');
+    app.innerHTML = '';
 
     const container = document.createElement('div')
     container.classList.add('test-container')
 
     const q = questions[questionIndex]
 
-    container.innerHTML = ''
 
     const title = document.createElement('h2')
-    title.textContent = ` ${questionIndex}`
+    title.textContent = ` ${questionIndex + 1}`
     container.append(title)
 
     const textQuestion = document.createElement('div')
@@ -134,4 +145,60 @@ function renderQuestion() {
 
     const optionsDiv = document.createElement('div');
     optionsDiv.classList.add('options')
+
+    const radioGroupName = `q${questionIndex}`;
+    q.options.forEach((opt, idx) => {
+        const label = document.createElement('label');
+        label.className = 'option';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = radioGroupName;
+        radio.value = idx;
+
+        label.append(radio, document.createTextNode(opt.text));
+        optionsDiv.append(label);
+    });
+
+    container.append(optionsDiv);
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'next-btn';
+    nextBtn.textContent = questionIndex < questions.length - 1 ? 'Следующий вопрос' : 'Завершить тест';
+    nextBtn.disabled = true;
+
+    const radios = optionsDiv.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            nextBtn.disabled = false;
+        });
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const selected = optionsDiv.querySelector(`input[name="${radioGroupName}"]:checked`);
+        const selectedIdx = selected ? parseInt(selected.value) : -1;
+        const isCorrect = selectedIdx >= 0 && q.options[selectedIdx].correct === 'true';
+        userAnswers.push({ questionIndex, selectedIdx, isCorrect });
+        questionIndex++;
+        if (questionIndex < questions.length) {
+            renderQuestion();
+        } else {
+            container.innerHTML = '<h2>Тест завершён.</h2><p>Спасибо за участие!</p>';
+        }
+    });
+
+    container.append(nextBtn);
+    app.append(container);
 }
+window.addEventListener('DOMContentLoaded', () => {
+    let app = document.getElementById('app');
+    if (!app) {
+        app = document.createElement('div');
+        app.id = 'app';
+        document.body.append(app);
+    }
+
+    const { form } = createElements();
+    app.append(form);
+});
